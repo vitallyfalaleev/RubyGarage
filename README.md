@@ -1,24 +1,30 @@
-# README
+# About
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Simple To-Do Lists app for Ruby on Rails Courses
 
-Things you may want to cover:
+*Functional requirements*
+- Able to create/update/delete projects
+- Able to add tasks to my project
+- Able to update/delete tasks
+- Able to prioritize tasks into a project
+- Able to choose deadline for my task
+- Able to mark a task as 'done'
 
-* Ruby version
+# Used technologies
+## Back-end
 
-* System dependencies
+**Rails**: 6.0.2.1
 
-* Configuration
+**Ruby**: 2.7.0p0
 
-* Database creation
+### Gems
 
-* Database initialization
+**Figaro** - Simple, Heroku-friendly Rails app configuration using ENV and a single YAML file
 
-* How to run the test suite
+## Front-end
 
-* Services (job queues, cache servers, search engines, etc.)
+**VueJs**: 2.6.11
 
-* Deployment instructions
+**vue-router**: 3.1.5
 
-* ...
+**vuex**: 3.1.2
