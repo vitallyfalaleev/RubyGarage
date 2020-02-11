@@ -19,7 +19,11 @@ Simple To-Do Lists app for Ruby on Rails Courses
 
 ### Gems
 
-**Figaro** - Simple, Heroku-friendly Rails app configuration using ENV and a single YAML file
+**Figaro** - Simple, Heroku-friendly Rails app configuration using ENV and a single YAML file.
+
+**Devise** is a flexible authentication solution for Rails based on Warden.
+
+**Devise-jwt** is a devise extension which uses JWT tokens for user authentication. 
 
 ## Front-end
 
