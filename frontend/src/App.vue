@@ -3,7 +3,6 @@
     <v-app-bar
             app
             color="primary darken-2"
-            dark
             dense
     >
       <div class="d-flex align-center">
@@ -64,6 +63,22 @@ export default {
       this.isLogin = true
       this.userEmail = sessionStorage.getItem('user-email')
     }
+    // axios
+    //         .get('http://localhost:5000/api/v1/projects', {
+    //           params: {
+    //             user_id: 1
+    //           }
+    //         })
+    //         .then(res => {console.log('all', res)})
+    // axios
+    //         .post('http://localhost:5000/api/v1/projects', {
+    //           project: {
+    //             title: "asd",
+    //             user_id: 2
+    //           }
+    //         })
+    //         .then(res => {console.log('new', res)})
+
   }
 };
 </script>
