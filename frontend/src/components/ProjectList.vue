@@ -14,9 +14,7 @@
                 :key="project.id"
         >
             <project-item :project="project" />
-
         </v-card>
-
     </div>
 </template>
 <script>

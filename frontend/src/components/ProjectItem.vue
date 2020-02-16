@@ -24,41 +24,52 @@
                         Save
                     </v-btn>
                 </v-form>
-                <v-list>
-                    <v-list-item
-                            v-for="(task, index) in tasks"
-                            :key="index"
-                    >
-                            <v-list-item-action>
-                                <v-checkbox
-                                        v-model="task.done"
-                                        color="primary"
-                                        @click="task.done = !task.done"
-                                ></v-checkbox>
-                            </v-list-item-action>
-
-                            <v-list-item-content>
-                                <v-list-item-title>{{task.name}}</v-list-item-title>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn-toggle
-                                        dense
-                                        group
-                                >
-                                    <v-btn text>
-                                        <v-icon>mdi-pencil-outline</v-icon>
-                                    </v-btn>
-
-                                    <v-btn text tile>
-                                        <v-icon>mdi-delete-outline</v-icon>
-                                    </v-btn>
-                                </v-btn-toggle>
-                            </v-list-item-action>
-
-                    </v-list-item>
-
-                </v-list>
-
+                <v-form @submit.prevent="createTask()">
+                    <v-row>
+                        <v-col
+                                cols="12"
+                                md="8">
+                            <v-text-field
+                                    v-model="taskTitle"
+                                    :counter="120"
+                                    label="Task Name"
+                                    required
+                            ></v-text-field>
+                        </v-col>
+                        <v-col
+                                cols="12"
+                                md="3">
+                            <v-menu
+                                    v-model="datePicker"
+                                    :close-on-content-click="false"
+                                    :nudge-right="40"
+                                    transition="scale-transition"
+                                    offset-y
+                                    min-width="290px"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                            v-model="taskDate"
+                                            label="Pick date"
+                                            readonly
+                                            v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="taskDate" @input="datePicker = false"></v-date-picker>
+                            </v-menu>
+                        </v-col>
+                        <v-col
+                                cols="12"
+                                md="1">
+                            <v-btn text
+                                   type="submit"
+                            >
+                                <v-icon>mdi-send</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-form>
+                <TasksItem :tasks="tasks"/>
             </v-list-item-content>
         </v-list-item>
         <v-card-actions>
@@ -84,13 +95,20 @@
 </template>
 <script>
     import axios from 'axios'
+    import TasksItem from "./TasksItem";
     export default {
         name: "ProjectItem",
+        components: {
+            TasksItem
+        },
         props: ['project'],
         data: () => ({
-           isEdit: false,
+            isEdit: false,
             title: '',
-            tasks: []
+            tasks: [],
+            taskTitle: '',
+            taskDate: new Date().toISOString().substr(0, 10),
+            datePicker: false
         }),
         methods: {
             updateProject(){
@@ -110,12 +128,12 @@
                                     Authorization: sessionStorage.getItem('token')
                                 }
                             })
-                    .then(
-                        () => {
-                            this.project.title = this.title
-                            this.isEdit = !this.isEdit
-                        }
-                    )
+                        .then(
+                            () => {
+                                this.project.title = this.title
+                                this.isEdit = !this.isEdit
+                            }
+                        )
                 }
             },
             deleteProject(){
@@ -139,13 +157,30 @@
                         }
                     })
                     .then(res => {
-                        console.log(res)
                         this.tasks = res.data
                     })
+            },
+            createTask(){
+                console.log(typeof this.taskDate)
+                axios
+                    .post('http://localhost:5000/api/v1/tasks', {
+                            task: {
+                                name: this.taskTitle,
+                                date: this.taskDate,
+                                project_id: this.project.id,
+                                user_id: this.project.user_id
+                            }
+                        },
+                        {
+                            headers: {
+                                Authorization: sessionStorage.getItem('token')
+                            }
+                        })
+                    .then(() => {
+                        console.log(this.taskDate)
+                        this.getTasks()
+                    })
             }
-        },
-        computed: {
-
         },
         mounted() {
             this.getTasks()
