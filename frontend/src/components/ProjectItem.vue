@@ -24,6 +24,41 @@
                         Save
                     </v-btn>
                 </v-form>
+                <v-list>
+                    <v-list-item
+                            v-for="(task, index) in tasks"
+                            :key="index"
+                    >
+                            <v-list-item-action>
+                                <v-checkbox
+                                        v-model="task.done"
+                                        color="primary"
+                                        @click="task.done = !task.done"
+                                ></v-checkbox>
+                            </v-list-item-action>
+
+                            <v-list-item-content>
+                                <v-list-item-title>{{task.name}}</v-list-item-title>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-btn-toggle
+                                        dense
+                                        group
+                                >
+                                    <v-btn text>
+                                        <v-icon>mdi-pencil-outline</v-icon>
+                                    </v-btn>
+
+                                    <v-btn text tile>
+                                        <v-icon>mdi-delete-outline</v-icon>
+                                    </v-btn>
+                                </v-btn-toggle>
+                            </v-list-item-action>
+
+                    </v-list-item>
+
+                </v-list>
+
             </v-list-item-content>
         </v-list-item>
         <v-card-actions>
@@ -54,7 +89,8 @@
         props: ['project'],
         data: () => ({
            isEdit: false,
-            title: ''
+            title: '',
+            tasks: []
         }),
         methods: {
             updateProject(){
@@ -91,7 +127,28 @@
                             }
                         })
                     .then(() => {this.$store.dispatch('getProjects')})
+            },
+            getTasks(){
+                axios
+                    .get('http://localhost:5000/api/v1/tasks', {
+                        params: {
+                            project_id: this.project.id
+                        },
+                        headers: {
+                            Authorization: sessionStorage.getItem('token')
+                        }
+                    })
+                    .then(res => {
+                        console.log(res)
+                        this.tasks = res.data
+                    })
             }
-        }
+        },
+        computed: {
+
+        },
+        mounted() {
+            this.getTasks()
+        },
     }
 </script>

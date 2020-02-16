@@ -24,7 +24,7 @@ export default new Vuex.Store({
         },
         FETCH_PROJECTS(state, data) {
             state.projects = data
-        }
+        },
     },
     actions: {
         createSession({commit}, {user}){
@@ -77,7 +77,8 @@ export default new Vuex.Store({
                     commit('FETCH_PROJECTS', res.data)
                     console.log('all', commit, res.data, this.projects)
                 })
-        }
+        },
+
     },
     modules: {
     },
