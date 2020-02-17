@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-list-item three-line>
+        <v-list-item two-line >
             <v-list-item-content>
                 <v-list-item-title
                         v-if="!isEdit"
@@ -24,52 +24,7 @@
                         Save
                     </v-btn>
                 </v-form>
-                <v-form @submit.prevent="createTask()">
-                    <v-row>
-                        <v-col
-                                cols="12"
-                                md="8">
-                            <v-text-field
-                                    v-model="taskTitle"
-                                    :counter="120"
-                                    label="Task Name"
-                                    required
-                            ></v-text-field>
-                        </v-col>
-                        <v-col
-                                cols="12"
-                                md="3">
-                            <v-menu
-                                    v-model="datePicker"
-                                    :close-on-content-click="false"
-                                    :nudge-right="40"
-                                    transition="scale-transition"
-                                    offset-y
-                                    min-width="290px"
-                            >
-                                <template v-slot:activator="{ on }">
-                                    <v-text-field
-                                            v-model="taskDate"
-                                            label="Pick date"
-                                            readonly
-                                            v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-date-picker v-model="taskDate" @input="datePicker = false"></v-date-picker>
-                            </v-menu>
-                        </v-col>
-                        <v-col
-                                cols="12"
-                                md="1">
-                            <v-btn text
-                                   type="submit"
-                            >
-                                <v-icon>mdi-send</v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-form>
-                <TasksItem :tasks="tasks"/>
+                <task-list :project="project"/>
             </v-list-item-content>
         </v-list-item>
         <v-card-actions>
@@ -95,20 +50,16 @@
 </template>
 <script>
     import axios from 'axios'
-    import TasksItem from "./TasksItem";
+    import TaskList from "./TaskList";
     export default {
         name: "ProjectItem",
         components: {
-            TasksItem
+            TaskList
         },
         props: ['project'],
         data: () => ({
             isEdit: false,
             title: '',
-            tasks: [],
-            taskTitle: '',
-            taskDate: new Date().toISOString().substr(0, 10),
-            datePicker: false
         }),
         methods: {
             updateProject(){
@@ -146,44 +97,6 @@
                         })
                     .then(() => {this.$store.dispatch('getProjects')})
             },
-            getTasks(){
-                axios
-                    .get('http://localhost:5000/api/v1/tasks', {
-                        params: {
-                            project_id: this.project.id
-                        },
-                        headers: {
-                            Authorization: sessionStorage.getItem('token')
-                        }
-                    })
-                    .then(res => {
-                        this.tasks = res.data
-                    })
-            },
-            createTask(){
-                console.log(typeof this.taskDate)
-                axios
-                    .post('http://localhost:5000/api/v1/tasks', {
-                            task: {
-                                name: this.taskTitle,
-                                date: this.taskDate,
-                                project_id: this.project.id,
-                                user_id: this.project.user_id
-                            }
-                        },
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
-                    .then(() => {
-                        console.log(this.taskDate)
-                        this.getTasks()
-                    })
-            }
-        },
-        mounted() {
-            this.getTasks()
         },
     }
 </script>

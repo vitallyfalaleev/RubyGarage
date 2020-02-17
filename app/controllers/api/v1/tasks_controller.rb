@@ -17,6 +17,17 @@ class Api::V1::TasksController < ApplicationController
     end
   end
 
+  def update
+    if @task.update_attributes(task_params)
+      render json: { status: 200 }
+    else
+      render json: { status: 400, error: 'something wrong' }
+    end
+  end
+  def destroy
+    @task.destroy
+    render json: { status: 200 }
+  end
   private
 
   def set_task
@@ -24,6 +35,6 @@ class Api::V1::TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:name, :date, :project_id, :user_id)
+    params.require(:task).permit(:name, :date, :project_id, :user_id, :done)
   end
 end

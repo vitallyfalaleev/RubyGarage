@@ -57,9 +57,8 @@ export default new Vuex.Store({
                             Authorization: sessionStorage.getItem('token')
                         }
                     })
-                .then(res => {
+                .then(() => {
                     commit("STATE_SUCCESS")
-                    console.log('new', res)
                 })
 
         },
@@ -75,7 +74,6 @@ export default new Vuex.Store({
                 })
                 .then(res => {
                     commit('FETCH_PROJECTS', res.data)
-                    console.log('all', commit, res.data, this.projects)
                 })
         },
 
