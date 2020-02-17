@@ -8,6 +8,7 @@
                     <v-text-field
                             v-model="taskTitle"
                             :counter="120"
+                            :rules="taskTitleRules"
                             label="Task Name"
                             required
                     ></v-text-field>
@@ -64,7 +65,11 @@
             tasks: [],
             taskTitle: '',
             taskDate: new Date().toISOString().substr(0, 10),
-            datePicker: false
+            datePicker: false,
+            taskTitleRules: [
+                v => !!v || 'Title is required',
+                v => (v && v.length <= 120) || 'Title must be less than 120 characters',
+            ],
         }),
         components: {
             TaskItem

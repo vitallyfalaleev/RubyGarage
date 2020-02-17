@@ -12,6 +12,7 @@
                     <v-text-field
                             v-model="title"
                             :placeholder="project.title"
+                            :rules="projectTitleRules"
                             :counter="120"
                             label="Project Name"
                             required
@@ -60,6 +61,10 @@
         data: () => ({
             isEdit: false,
             title: '',
+            projectTitleRules: [
+                v => !!v || 'Title is required',
+                v => (v && v.length <= 120) || 'Name must be less than 120 characters',
+            ],
         }),
         methods: {
             updateProject(){

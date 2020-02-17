@@ -8,6 +8,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
+        isLogin: sessionStorage.getItem('logged'),
         status: '',
         modal: false,
         projects: []
@@ -19,8 +20,11 @@ export default new Vuex.Store({
         STATE_SUCCESS(state) {
             state.status = 'success';
         },
-        SET_MODAL(state, data) {
-            state.modal = data
+        SET_MODAL(state) {
+            state.modal = !state.modal
+        },
+        SET_SESSION(state) {
+            state.isLogin = !state.isLogin
         },
         FETCH_PROJECTS(state, data) {
             state.projects = data
@@ -36,11 +40,15 @@ export default new Vuex.Store({
                     sessionStorage.setItem('token', res.headers.authorization)
                     sessionStorage.setItem('user-id', res.data.user.id)
                     sessionStorage.setItem('user-email', res.data.user.email)
+                    sessionStorage.setItem('logged', true)
+
                 })
         },
-        setModal({commit, state}, data) {
-            commit('SET_MODAL', data)
-            return state.modal
+        setModal({commit}) {
+            commit('SET_MODAL')
+        },
+        setSession({commit}) {
+            commit('SET_SESSION')
         },
         createProject({commit}, data) {
             commit("STATE_REQUEST")
@@ -81,6 +89,9 @@ export default new Vuex.Store({
     modules: {
     },
     getters: {
+        isLogin: state => {
+            return state.isLogin
+        },
         status: state => {
             return state.status
         },
