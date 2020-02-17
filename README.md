@@ -6,7 +6,6 @@ Simple To-Do Lists app for Ruby on Rails Courses
 - Able to create/update/delete projects
 - Able to add tasks to my project
 - Able to update/delete tasks
-- Able to prioritize tasks into a project
 - Able to choose deadline for my task
 - Able to mark a task as 'done'
 
