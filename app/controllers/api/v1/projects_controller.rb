@@ -14,7 +14,7 @@ class Api::V1::ProjectsController < ApplicationController
     if @project.save
       render json: @project
     else
-      render json: { status: 400, error: @project.errors }
+      render json: { status: 304, error: @project.errors }
     end
   end
 
@@ -22,13 +22,13 @@ class Api::V1::ProjectsController < ApplicationController
     if @project.update_attributes(project_params)
       render json: { status: 200 }
     else
-      render json: { status: 400, error: 'something wrong' }
+      render json: { status: 304, error: 'something wrong' }
     end
   end
 
   def destroy
     @project.destroy
-    render json: { status: 200 }
+    render json: { status: 204 }
   end
 
   private

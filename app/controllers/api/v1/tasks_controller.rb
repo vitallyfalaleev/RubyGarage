@@ -14,7 +14,7 @@ class Api::V1::TasksController < ApplicationController
     if @task.save
       render json: @task
     else
-      render json: { status: 400, error: @task.errors }
+      render json: { status: 304, error: @task.errors }
     end
   end
 
@@ -22,13 +22,13 @@ class Api::V1::TasksController < ApplicationController
     if @task.update_attributes(task_params)
       render json: { status: 200 }
     else
-      render json: { status: 400, error: 'something wrong' }
+      render json: { status: 304, error: 'something wrong' }
     end
   end
 
   def destroy
     @task.destroy
-    render json: { status: 200 }
+    render json: { status: 204 }
   end
 
   private
