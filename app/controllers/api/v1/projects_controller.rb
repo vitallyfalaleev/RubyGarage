@@ -5,7 +5,7 @@ class Api::V1::ProjectsController < ApplicationController
   before_action :set_project, only: %i[update destroy]
 
   def index
-    @projects = Project.where(user_id: params[:user_id]).order("created_at DESC")
+    @projects = Project.where(user_id: params[:user_id]).order('created_at DESC')
     render json: @projects
   end
 

@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 class Api::V1::TasksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_task, only: %i[update destroy]
 
-
   def index
-    @tasks = Task.where(project_id: params[:project_id]).order("created_at DESC")
+    @tasks = Task.where(project_id: params[:project_id]).order('created_at DESC')
     render json: @tasks
   end
 
@@ -24,10 +25,12 @@ class Api::V1::TasksController < ApplicationController
       render json: { status: 400, error: 'something wrong' }
     end
   end
+
   def destroy
     @task.destroy
     render json: { status: 200 }
   end
+
   private
 
   def set_task

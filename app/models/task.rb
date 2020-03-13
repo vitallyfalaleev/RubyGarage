@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Task model for Projects
 class Task < ApplicationRecord
   belongs_to :user
   belongs_to :project

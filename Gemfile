@@ -47,3 +47,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'devise'
 gem 'devise-jwt'
 gem 'figaro'
+
+gem 'rubocop', require: false

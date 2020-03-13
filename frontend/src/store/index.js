@@ -29,6 +29,28 @@ export default new Vuex.Store({
         FETCH_PROJECTS(state, data) {
             state.projects = data
         },
+        SET_COOKIES(state, data) {
+            data.options = {
+                'max-age': 86400,
+                ...data.options
+            };
+
+            if (data.options.expires instanceof Date) {
+                data.options.expires = data.options.expires.toUTCString();
+            }
+
+            let updatedCookie = encodeURIComponent(data.name) + "=" + encodeURIComponent(data.value);
+
+            for (let optionKey in data.options) {
+                updatedCookie += "; " + optionKey;
+                let optionValue = data.options[optionKey];
+                if (optionValue !== true) {
+                    updatedCookie += "=" + optionValue;
+                }
+            }
+
+            document.cookie = updatedCookie;
+        },
     },
     actions: {
         createSession({commit}, {user}){
