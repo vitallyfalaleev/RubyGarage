@@ -1,22 +1,18 @@
 <template>
   <div class="home">
-    <v-container>
-      <project-list/>
-    </v-container>
+      <ProjectsContainer/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import ProjectList from "../components/ProjectList";
+import ProjectsContainer from "../components/ProjectsContainer";
 
 export default {
 
   name: 'Home',
   components: {
-    ProjectList
-  },
-  computed: {
+    ProjectsContainer
   },
 }
 </script>

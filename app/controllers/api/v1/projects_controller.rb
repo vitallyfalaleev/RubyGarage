@@ -13,11 +13,14 @@ class Api::V1::ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(project_params)
-    if @project.save
-      render json: @project
+    project = Project.new(project_params)
+    if project.save
+      options = {
+          included: [:tasks]
+      }
+      render json: ProjectsSerializer.new(project, options).serialized_json
     else
-      render json: { status: 304, error: @project.errors }
+      render json: { status: 422, error: project.errors }
     end
   end
 
@@ -25,7 +28,7 @@ class Api::V1::ProjectsController < ApplicationController
     if @project.update_attributes(project_params)
       render json: { status: 200 }
     else
-      render json: { status: 304, error: 'something wrong' }
+      render json: { status: 422, error: 'something wrong' }
     end
   end
 

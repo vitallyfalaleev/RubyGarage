@@ -1,14 +1,14 @@
 <template>
     <v-list-item-group inactive>
+        {{data}}
         <v-form @submit.prevent="createTask()">
             <v-row>
                 <v-col
                         cols="12"
                         md="8">
                     <v-text-field
-                            v-model="taskTitle"
+                            v-model="task.title"
                             :counter="120"
-                            :rules="taskTitleRules"
                             label="Task Name"
                             required
                     ></v-text-field>
@@ -26,13 +26,13 @@
                     >
                         <template v-slot:activator="{ on }">
                             <v-text-field
-                                    v-model="taskDate"
+                                    v-model="task.date"
                                     label="Pick date"
                                     readonly
                                     v-on="on"
                             ></v-text-field>
                         </template>
-                        <v-date-picker v-model="taskDate" @input="datePicker = false"></v-date-picker>
+                        <v-date-picker v-model="task.date" :min="minDate" @input="datePicker = false"></v-date-picker>
                     </v-menu>
                 </v-col>
                 <v-col
@@ -46,25 +46,26 @@
                 </v-col>
             </v-row>
         </v-form>
-        <span
-                v-for="task in tasks"
-                :key="task.id"
-                :disabled="task.done"
-        >
-            <task-item :task="task" />
-        </span>
+                <span
+                        v-for="task in data.tasks"
+                        :key="task.id"
+                        :disabled="task.done"
+                >
+                    <task-item :task="task" />
+                </span>
     </v-list-item-group>
 </template>
 <script>
     import TaskItem from "./TaskItem";
-    import axios from "axios";
     export default {
         name: "TaskList",
-        props: ["project"],
+        props: ["data"],
         data: () => ({
-            tasks: [],
-            taskTitle: '',
-            taskDate: new Date().toISOString().substr(0, 10),
+            task: {
+                title: '',
+                date: new Date().toISOString().substr(0, 10),
+            },
+            minDate: new Date().toISOString().substr(0, 10),
             datePicker: false,
             taskTitleRules: [
                 v => !!v || 'Title is required',
@@ -75,43 +76,11 @@
             TaskItem
         },
         methods: {
-            getTasks(){
-                axios
-                    .get('http://localhost:5000/api/v1/tasks', {
-                        params: {
-                            project_id: this.project.id
-                        },
-                        headers: {
-                            Authorization: sessionStorage.getItem('token')
-                        }
-                    })
-                    .then(res => {
-                        this.tasks = res.data
-                    })
-            },
             createTask(){
-                axios
-                    .post('http://localhost:5000/api/v1/tasks', {
-                            task: {
-                                name: this.taskTitle,
-                                date: this.taskDate,
-                                project_id: this.project.id,
-                                user_id: this.project.user_id
-                            }
-                        },
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
-                    .then(() => {
-                        this.getTasks()
-                    })
+                this.$store.dispatch('createTask', {task: this.task,
+                    project_id: this.data.id})
             }
 
         },
-        mounted() {
-            this.getTasks()
-        }
     }
 </script>

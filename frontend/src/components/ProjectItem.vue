@@ -4,28 +4,34 @@
             <v-list-item-content>
                 <v-list-item-title
                         v-if="!isEdit"
-                        class="headline mb-1">{{project.title}}</v-list-item-title>
+                        class="headline mb-1">{{project.attributes.title}}</v-list-item-title>
                 <v-form
                         v-else
                         @submit.prevent="updateProject()"
                 >
-                    <v-text-field
-                            v-model="title"
-                            :placeholder="project.title"
-                            :rules="projectTitleRules"
-                            :counter="120"
-                            label="Project Name"
-                            required
-                    ></v-text-field>
-                    <v-btn
-                            color="success"
-                            class="mr-4"
-                            type="submit"
-                    >
-                        Save
-                    </v-btn>
+                    <v-row>
+                        <v-col>
+                            <v-text-field
+                                    v-model="title"
+                                    :placeholder="project.attributes.title"
+                                    :rules="projectTitleRules"
+                                    :counter="120"
+                                    label="Project Name"
+                                    required
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                    color="success"
+                                    class="mr-4"
+                                    type="submit"
+                            >
+                                Save
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 </v-form>
-                <task-list :project="project"/>
+                <task-list :data="{tasks: project.attributes.tasks, id: project.id}"/>
             </v-list-item-content>
         </v-list-item>
         <v-card-actions>
@@ -50,8 +56,8 @@
     </div>
 </template>
 <script>
-    import axios from 'axios'
     import TaskList from "./TaskList";
+
     export default {
         name: "ProjectItem",
         components: {
@@ -71,36 +77,17 @@
                 if(this.title === ""){
                     this.isEdit = !this.isEdit
                 } else {
-                    console.log(this.project.id)
-                    axios
-                        .put('http://localhost:5000/api/v1/projects/' + this.project.id,
-                            {
-                                project: {
-                                    title: this.title,
-                                }
-                            },
-                            {
-                                headers: {
-                                    Authorization: sessionStorage.getItem('token')
-                                }
-                            })
+                    this.$store.dispatch('updateProject', {id: this.project.id, title: this.title})
                         .then(
                             () => {
-                                this.project.title = this.title
+                                this.project.attributes.title = this.title
                                 this.isEdit = !this.isEdit
                             }
                         )
                 }
             },
             deleteProject(){
-                axios
-                    .delete('http://localhost:5000/api/v1/projects/' + this.project.id,
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
-                    .then(() => {this.$store.dispatch('getProjects')})
+                this.$store.dispatch('deleteProject', this.project.id)
             },
         },
     }

@@ -12,6 +12,7 @@ export default new Vuex.Store({
         isLogin: Cookies.get('logged'),
         userEmail: Cookies.get('user-email'),
         status: '',
+        listStatus: true,
         modal: false,
         projects: []
     },
@@ -21,6 +22,12 @@ export default new Vuex.Store({
         },
         STATE_SUCCESS(state) {
             state.status = 'success';
+        },
+        LIST_REQUEST(state) {
+            state.listStatus = true;
+        },
+        LIST_SUCCESS(state) {
+            state.listStatus = false;
         },
         SET_MODAL(state) {
             state.modal = !state.modal
@@ -37,10 +44,18 @@ export default new Vuex.Store({
         ADD_PROJECT(state, data) {
             state.projects = [data, ...state.projects]
         },
+        DELETE_PROJECT(state, data) {
+            state.projects.splice(state.projects.findIndex(function (i) {
+                return i.id === data;
+            }), 1)
+        },
+        ADD_TASK(state, data){
+            const element = state.projects.findIndex(x => x.id == data.project_id)
+            state.projects[element].attributes.tasks = [data, ...state.projects[element].attributes.tasks]
+        },
         SET_COOKIES(state, data){
             data.forEach(cookie => {
                     return Cookies.set(cookie.name, cookie.value, { expires: 1 })
-
                 }
             )
         },
@@ -56,7 +71,10 @@ export default new Vuex.Store({
         userRegistration({ dispatch }, {user}){
             axios
                 .post( BASE_URL + 'signup', {user})
-                .then(setTimeout(() => dispatch('createSession', {user}), 500))
+                .then(res => {
+                    console.log(res)
+                    setTimeout(() => dispatch('createSession', {user}), 500)
+                })
         },
         createSession({commit}, {user}){
             commit("STATE_REQUEST");
@@ -99,11 +117,42 @@ export default new Vuex.Store({
                     })
                 .then((res) => {
                     commit("STATE_SUCCESS");
-                    commit('ADD_PROJECT', res.data)
+                    commit('ADD_PROJECT', res.data.data)
                 })
 
         },
+        updateProject({commit}, data) {
+            axios
+                .put(BASE_URL+'projects/'+data.id,
+                    {
+                        project: {
+                            title: data.title,
+                        }
+                    },
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+                .then((res) => {
+                    commit('ADD_PROJECT', res.data.data)
+                })
+
+        },
+        deleteProject({commit}, data) {
+            axios
+                .delete(BASE_URL+'projects/'+data,
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+                .then(
+                    commit('DELETE_PROJECT', data),
+                )
+        },
         getProjects({commit}){
+            commit("LIST_REQUEST");
             axios
                 .get(BASE_URL + 'projects', {
                     params: {
@@ -115,12 +164,33 @@ export default new Vuex.Store({
                 })
                 .then(res => {
                     commit('FETCH_PROJECTS', res.data.data)
+                    commit("LIST_SUCCESS");
+
                 })
         },
         setModal({commit}) {
             commit('SET_MODAL')
         },
-
+        createTask({commit}, data){
+            console.log(commit, data)
+            axios
+                .post(BASE_URL+'tasks', {
+                        task: {
+                            name: data.task.title,
+                            date: data.task.date,
+                            project_id: data.project_id,
+                            user_id: Cookies.get('user-id')
+                        }
+                    },
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+                .then(res => {
+                    commit('ADD_TASK', res.data)
+                })
+        },
     },
     modules: {
     },
@@ -130,6 +200,9 @@ export default new Vuex.Store({
         },
         status: state => {
             return state.status
+        },
+        listStatus: state => {
+            return state.listStatus
         },
         modal: state => {
             return state.modal
