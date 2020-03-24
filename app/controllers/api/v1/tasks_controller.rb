@@ -6,7 +6,6 @@ class Api::V1::TasksController < ApplicationController
 
   def index
     @tasks = Task.where(project_id: params[:project_id]).order('created_at DESC')
-    render json: @tasks
   end
 
   def create

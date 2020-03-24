@@ -1,15 +1,18 @@
 <template>
     <v-container>
-        <ProjectCreation />
-        <v-card v-if="projects.length == 0"
-                class="mx-auto"
-                outlined
-        >
-            <v-card-text>
-                Create project.
-            </v-card-text>
-        </v-card>
-
+        <v-row>
+            <v-col cols="12">
+                <ProjectCreation />
+            </v-col>
+            <v-col cols="12" v-if="projects.length == 0">
+                <v-card
+                >
+                    <v-card-text>
+                        Create project.
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
         <ProjectList/>
     </v-container>
 </template>

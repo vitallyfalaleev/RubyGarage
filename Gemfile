@@ -51,3 +51,4 @@ gem 'figaro'
 gem 'rubocop', require: false
 gem 'active_model_serializers'
 gem 'fast_jsonapi'
+gem 'jbuilder'

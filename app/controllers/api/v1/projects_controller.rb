@@ -6,9 +6,9 @@ class Api::V1::ProjectsController < ApplicationController
 
   def index
     projects = Project.where(user_id: params[:user_id])
-    options = {
-        included: [:tasks]
-    }
+    options = {}
+    options[:included] = [:tasks]
+
     render json: ProjectsSerializer.new(projects, options).serialized_json
   end
 

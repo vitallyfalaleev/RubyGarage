@@ -51,7 +51,13 @@ export default new Vuex.Store({
         },
         ADD_TASK(state, data){
             const element = state.projects.findIndex(x => x.id == data.project_id)
-            state.projects[element].attributes.tasks = [data, ...state.projects[element].attributes.tasks]
+            state.projects[element].attributes.tasks = [...state.projects[element].attributes.tasks, data]
+        },
+        DELETE_TASK(state, data){
+            const element = state.projects.findIndex(x => x.id == data.project_id)
+            state.projects[element].attributes.tasks.splice(state.projects[element].attributes.tasks.findIndex(function (i) {
+                return i.id === data.id;
+            }), 1)
         },
         SET_COOKIES(state, data){
             data.forEach(cookie => {
@@ -154,7 +160,7 @@ export default new Vuex.Store({
         getProjects({commit}){
             commit("LIST_REQUEST");
             axios
-                .get(BASE_URL + 'projects', {
+                .get(BASE_URL + 'projects.json', {
                     params: {
                         user_id: Cookies.get('user-id')
                     },
@@ -172,7 +178,6 @@ export default new Vuex.Store({
             commit('SET_MODAL')
         },
         createTask({commit}, data){
-            console.log(commit, data)
             axios
                 .post(BASE_URL+'tasks', {
                         task: {
@@ -190,6 +195,48 @@ export default new Vuex.Store({
                 .then(res => {
                     commit('ADD_TASK', res.data)
                 })
+        },
+        doneTask({commit}, data){
+            console.log(commit, data)
+            axios
+                .put(BASE_URL + 'tasks/' + data.id, {
+                        task: {
+                            done: data.status
+                        }
+                    },
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+        },
+        updateTask({commit}, data){
+            console.log(commit)
+            axios
+                .put(BASE_URL + 'tasks/' + data.id, {
+                        task: {
+                            name: data.name,
+                            date: data.date,
+                        }
+                    },
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+        },
+        deleteTask({commit}, data){
+            axios
+                .delete(BASE_URL + 'tasks/' + data.id,
+                    {
+                        headers: {
+                            Authorization: Cookies.get('token')
+                        }
+                    })
+                .then(
+                    commit('DELETE_TASK', data)
+                )
+
         },
     },
     modules: {

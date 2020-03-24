@@ -1,10 +1,47 @@
 <template>
-    <span v-show="!deleted">
-        <v-form v-if="edit" @submit.prevent="updateTask()">
+    <v-card outlined :class="expired? 'red--text' : '' ">
+        <v-row v-if="!edit">
+            <v-col cols="1" class="d-flex justify-center align-center"
+            >
+                <v-checkbox
+                        v-model="task.done"
+                        color="primary"
+                        @change="taskDone()"
+                ></v-checkbox>
+            </v-col>
+            <v-col>
+                <v-card-title>
+                    {{task.name}}
+                </v-card-title>
+                <v-card-subtitle>
+                    {{task.date}}
+                </v-card-subtitle>
+            </v-col>
+            <v-col cols="2">
+                <v-btn-toggle
+                        dense
+                        group
+                >
+                    <v-btn text @click="edit = !edit">
+                        <v-icon>mdi-pencil-outline</v-icon>
+                    </v-btn>
+                    <v-btn text @click="deleteTask()">
+                        <v-icon>mdi-delete-outline</v-icon>
+                    </v-btn>
+                </v-btn-toggle>
+            </v-col>
+        </v-row>
+        <v-form v-else @submit.prevent="updateTask()">
             <v-row>
-                <v-col
-                        cols="12"
-                        md="8">
+                <v-col cols="1" class="d-flex justify-center align-center"
+                >
+                    <v-checkbox
+                            v-model="task.done"
+                            color="primary"
+                            @change="taskDone()"
+                    ></v-checkbox>
+                </v-col>
+                <v-col>
                     <v-text-field
                             v-model="task.name"
                             :counter="120"
@@ -12,9 +49,7 @@
                             required
                     ></v-text-field>
                 </v-col>
-                <v-col
-                        cols="12"
-                        md="3">
+                <v-col cols="2">
                     <v-menu
                             v-model="datePicker"
                             :close-on-content-click="false"
@@ -31,103 +66,60 @@
                                     v-on="on"
                             ></v-text-field>
                         </template>
-                        <v-date-picker v-model="task.date" @input="datePicker = false"></v-date-picker>
+                        <v-date-picker v-model="task.date" :min="minDate" @input="datePicker = false"></v-date-picker>
                     </v-menu>
                 </v-col>
-                <v-col
-                        cols="12"
-                        md="1">
-                    <v-btn text
-                           type="submit"
+                <v-col cols="2">
+                    <v-btn-toggle
+                            dense
+                            group
                     >
-                        <v-icon>mdi-send</v-icon>
-                    </v-btn>
+                        <v-btn text type="submit">
+                            <v-icon>mdi-send</v-icon>
+                        </v-btn>
+                        <v-btn text @click="edit = !edit">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-btn-toggle>
                 </v-col>
             </v-row>
         </v-form>
-        <v-list-item v-else>
-        <v-list-item-action>
-            <v-checkbox
-                    v-model="task.done"
-                    color="primary"
-                    @change="taskDone()"
-            ></v-checkbox>
-        </v-list-item-action>
-        <v-list-item-content>
-            <v-list-item-title>{{task.name}}</v-list-item-title>
-            <v-list-item-subtitle>{{task.date}}</v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-action>
-            <v-btn-toggle
-                    dense
-                    group
-            >
-                <v-btn text @click="edit = !edit">
-                    <v-icon>mdi-pencil-outline</v-icon>
-                </v-btn>
-                <v-btn text @click="deleteTask()">
-                    <v-icon>mdi-delete-outline</v-icon>
-                </v-btn>
-            </v-btn-toggle>
-        </v-list-item-action>
-    </v-list-item>
-    </span>
+    </v-card>
 </template>
 <script>
-    import axios from "axios";
-
     export default {
         name: 'TaskItem',
         props: ["task"],
         data: () => ({
+            minDate: new Date().toISOString().substr(0, 10),
             datePicker: false,
             edit: false,
-            deleted: false
+            expired: false
         }),
         methods: {
+            exp(){
+                let now = new Date().toISOString().substr(0, 10);
+                if(now>this.task.date){
+                    this.expired = true
+                } else {
+                    this.expired = false
+                }
+            },
             updateTask(){
-                axios
-                    .put('http://localhost:5000/api/v1/tasks/' + this.task.id, {
-                            task: {
-                                name: this.task.name,
-                                date: this.task.date,
-                            }
-                        },
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
+                this.$store.dispatch('updateTask', {id: this.task.id, name: this.task.name, date: this.task.date})
                     .then(() => {
                         this.edit = !this.edit
                     })
             },
             taskDone(){
-                this.task.done = !this.task.done
-                axios
-                    .put('http://localhost:5000/api/v1/tasks/' + this.task.id, {
-                            task: {
-                                done: !this.task.done
-                            }
-                        },
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
+                this.$store.dispatch('doneTask', {id: this.task.id, status: this.task.done})
             },
             deleteTask(){
-                axios
-                    .delete('http://localhost:5000/api/v1/tasks/' + this.task.id,
-                        {
-                            headers: {
-                                Authorization: sessionStorage.getItem('token')
-                            }
-                        })
-                        .then(() => {
-                            this.deleted = !this.deleted
-                        })
+                this.$store.dispatch('deleteTask', this.task)
             }
         },
+        beforeMount() {
+            this.exp()
+        }
     }
 </script>
