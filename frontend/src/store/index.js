@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const BASE_URL = 'http://localhost:5000/api/v1/';
+const BASE_URL = 'https://rubygaragetodo.herokuapp.com/api/v1/';
 
 Vue.use(Vuex);
 
